@@ -1320,14 +1320,14 @@ impl<'a> Context<'a> {
             "\
                 if (realloc === undefined) {{
                     const buf = cachedTextEncoder.encode(arg);
-                    const ptr = malloc(buf.length, 1) >>> 0;
+                    const ptr = malloc(buf.length) >>> 0;
                     {mem}().subarray(ptr, ptr + buf.length).set(buf);
                     WASM_VECTOR_LEN = buf.length;
                     return ptr;
                 }}
 
                 let len = arg.length;
-                let ptr = malloc(len, 1) >>> 0;
+                let ptr = malloc(len) >>> 0;
 
                 const mem = {mem}();
 
@@ -1350,7 +1350,7 @@ impl<'a> Context<'a> {
                     if (offset !== 0) {{
                         arg = arg.slice(offset);
                     }}
-                    ptr = realloc(ptr, len, len = offset + arg.length * 3, 1) >>> 0;
+                    ptr = realloc(ptr, len, len = offset + arg.length * 3) >>> 0;
                     const view = {mem}().subarray(ptr + offset, ptr + len);
                     const ret = encodeString(arg, view);
                     {debug_end}
@@ -1423,7 +1423,7 @@ impl<'a> Context<'a> {
                 self.global(&format!(
                     "
                         function {}(array, malloc) {{
-                            const ptr = malloc(array.length * 4, 4) >>> 0;
+                            const ptr = malloc(array.length * 4) >>> 0;
                             const mem = {}();
                             for (let i = 0; i < array.length; i++) {{
                                 mem.setUint32(ptr + 4 * i, {}(array[i]), true);
@@ -1440,7 +1440,7 @@ impl<'a> Context<'a> {
                 self.global(&format!(
                     "
                         function {}(array, malloc) {{
-                            const ptr = malloc(array.length * 4, 4) >>> 0;
+                            const ptr = malloc(array.length * 4) >>> 0;
                             const mem = {}();
                             for (let i = 0; i < array.length; i++) {{
                                 mem.setUint32(ptr + 4 * i, addHeapObject(array[i]), true);
@@ -1473,7 +1473,7 @@ impl<'a> Context<'a> {
         self.global(&format!(
             "
             function {}(arg, malloc) {{
-                const ptr = malloc(arg.length * {size}, {size}) >>> 0;
+                const ptr = malloc(arg.length * {size}) >>> 0;
                 {}().set(arg, ptr / {size});
                 WASM_VECTOR_LEN = arg.length;
                 return ptr;

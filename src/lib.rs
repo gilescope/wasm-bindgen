@@ -1782,7 +1782,8 @@ pub mod __rt {
     }
 
     #[no_mangle]
-    pub extern "C" fn __wbindgen_malloc(size: usize, align: usize) -> *mut u8 {
+    pub extern "C" fn __wbindgen_malloc(size: usize) -> *mut u8 {
+        let align = mem::align_of::<usize>();
         if let Ok(layout) = Layout::from_size_align(size, align) {
             unsafe {
                 if layout.size() > 0 {
@@ -1804,8 +1805,8 @@ pub mod __rt {
         ptr: *mut u8,
         old_size: usize,
         new_size: usize,
-        align: usize,
     ) -> *mut u8 {
+        let align = mem::align_of::<usize>();
         debug_assert!(old_size > 0);
         debug_assert!(new_size > 0);
         if let Ok(layout) = Layout::from_size_align(old_size, align) {
@@ -1836,9 +1837,11 @@ pub mod __rt {
     }
 
     #[no_mangle]
-    pub unsafe extern "C" fn __wbindgen_free(ptr: *mut u8, size: usize, align: usize) {
+    pub unsafe extern "C" fn __wbindgen_free(ptr: *mut u8, size: usize) {
         // This happens for zero-length slices, and in that case `ptr` is
         // likely bogus so don't actually send this to the system allocator
+        let align = mem::align_of::<usize>();
+
         if size == 0 {
             return;
         }

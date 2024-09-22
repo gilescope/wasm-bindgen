@@ -96,11 +96,9 @@ pub enum AdapterType {
 pub enum Instruction {
     /// Calls a function by its id.
     CallCore(walrus::FunctionId),
-    /// Call the deallocation function.
-    DeferFree {
-        free: walrus::FunctionId,
-        align: usize,
-    },
+    /// Schedules a function to be called after the whole lift/lower cycle is
+    /// finished, e.g. to deallocate a string or something.
+    DeferCallCore(walrus::FunctionId),
     /// A call to one of our own defined adapters, similar to the standard
     /// call-adapter instruction
     CallAdapter(AdapterId),
@@ -456,7 +454,7 @@ impl walrus::CustomSection for NonstandardWitSection {
             };
             for instr in instrs {
                 match instr.instr {
-                    DeferFree { free: f, .. } | CallCore(f) => {
+                    DeferCallCore(f) | CallCore(f) => {
                         roots.push_func(f);
                     }
                     StoreRetptr { mem, .. }

@@ -111,7 +111,7 @@ impl InstructionBuilder<'_, '_> {
                 // ... then defer a call to `free` to happen later
                 let free = self.cx.free()?;
                 self.instructions.push(InstructionData {
-                    instr: Instruction::DeferFree { free, align: 1 },
+                    instr: Instruction::DeferCallCore(free),
                     stack_change: StackChange::Modified {
                         popped: 2,
                         pushed: 2,
@@ -420,7 +420,7 @@ impl InstructionBuilder<'_, '_> {
                 // special case it.
                 assert!(!self.instructions[len..]
                     .iter()
-                    .any(|idata| matches!(idata.instr, Instruction::DeferFree { .. })));
+                    .any(|idata| matches!(idata.instr, Instruction::DeferCallCore(_))));
 
                 // Finally, we add the two inputs to UnwrapResult, and everything checks out
                 //
@@ -460,7 +460,7 @@ impl InstructionBuilder<'_, '_> {
                 // implementation.
                 let free = self.cx.free()?;
                 self.instructions.push(InstructionData {
-                    instr: Instruction::DeferFree { free, align: 1 },
+                    instr: Instruction::DeferCallCore(free),
                     stack_change: StackChange::Modified {
                         popped: 2,
                         pushed: 2,
